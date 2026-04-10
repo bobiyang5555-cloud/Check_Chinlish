@@ -1,0 +1,7 @@
+paddlepaddle==3.2.0
+paddleocr[all]
+pillow
+pandas
+pyyaml
+requests
+python-Levenshtein

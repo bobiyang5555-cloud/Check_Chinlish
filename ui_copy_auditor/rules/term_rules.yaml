@@ -1,0 +1,604 @@
+
+forbidden:
+  - source: "default proportion"
+    suggest: "aspect ratio"
+    severity: 0.90
+    issue_type: "unnatural_ui_term"
+    category: "editing"
+
+  - source: "video proportion"
+    suggest: "aspect ratio"
+    severity: 0.86
+    issue_type: "unnatural_ui_term"
+    category: "editing"
+
+  - source: "screen proportion"
+    suggest: "aspect ratio"
+    severity: 0.84
+    issue_type: "unnatural_ui_term"
+    category: "editing"
+
+  - source: "default ratio"
+    suggest: "original ratio"
+    severity: 0.74
+    issue_type: "ambiguous_ui_term"
+    category: "editing"
+
+  - source: "open original sound"
+    suggest: "unmute original audio"
+    severity: 0.95
+    issue_type: "chinglish"
+    category: "audio"
+
+  - source: "close original sound"
+    suggest: "mute original audio"
+    severity: 0.95
+    issue_type: "chinglish"
+    category: "audio"
+
+  - source: "original sound"
+    suggest: "original audio"
+    severity: 0.72
+    issue_type: "term_preference"
+    category: "audio"
+
+  - source: "turn on original sound"
+    suggest: "unmute original audio"
+    severity: 0.86
+    issue_type: "unnatural_ui_term"
+    category: "audio"
+
+  - source: "turn off original sound"
+    suggest: "mute original audio"
+    severity: 0.86
+    issue_type: "unnatural_ui_term"
+    category: "audio"
+
+  - source: "background sound"
+    suggest: "background music"
+    severity: 0.70
+    issue_type: "term_preference"
+    category: "audio"
+
+  - source: "dub"
+    suggest: "voiceover"
+    severity: 0.76
+    issue_type: "unnatural_ui_term"
+    category: "audio"
+
+  - source: "one click film"
+    suggest: "auto edit"
+    severity: 0.88
+    issue_type: "literal_translation"
+    category: "template"
+
+  - source: "one click video"
+    suggest: "auto edit"
+    severity: 0.80
+    issue_type: "literal_translation"
+    category: "template"
+
+  - source: "intelligent film"
+    suggest: "auto edit"
+    severity: 0.82
+    issue_type: "literal_translation"
+    category: "template"
+
+  - source: "smart film"
+    suggest: "auto edit"
+    severity: 0.80
+    issue_type: "literal_translation"
+    category: "template"
+
+  - source: "template center"
+    suggest: "templates"
+    severity: 0.68
+    issue_type: "unnatural_ui_term"
+    category: "template"
+
+  - source: "apply template"
+    suggest: "use template"
+    severity: 0.60
+    issue_type: "term_preference"
+    category: "template"
+
+  - source: "same style"
+    suggest: "use this style"
+    severity: 0.74
+    issue_type: "ambiguous_ui_term"
+    category: "template"
+
+  - source: "generate highlight collection"
+    suggest: "create highlight reel"
+    severity: 0.92
+    issue_type: "unnatural_ui_term"
+    category: "highlight"
+
+  - source: "highlight collection"
+    suggest: "highlight reel"
+    severity: 0.90
+    issue_type: "unnatural_ui_term"
+    category: "highlight"
+
+  - source: "high light"
+    suggest: "highlight"
+    severity: 0.96
+    issue_type: "spelling_or_spacing"
+    category: "highlight"
+
+  - source: "wonderful moment"
+    suggest: "highlights"
+    severity: 0.75
+    issue_type: "literal_translation"
+    category: "highlight"
+
+  - source: "generate highlights"
+    suggest: "create highlights"
+    severity: 0.58
+    issue_type: "term_preference"
+    category: "highlight"
+
+  - source: "save to local"
+    suggest: "save to device"
+    severity: 0.82
+    issue_type: "unnatural_ui_term"
+    category: "export"
+
+  - source: "save local"
+    suggest: "save to device"
+    severity: 0.82
+    issue_type: "unnatural_ui_term"
+    category: "export"
+
+  - source: "save to album"
+    suggest: "save to photos"
+    severity: 0.88
+    issue_type: "literal_translation"
+    category: "export"
+
+  - source: "download to local"
+    suggest: "download to device"
+    severity: 0.72
+    issue_type: "unnatural_ui_term"
+    category: "export"
+
+  - source: "derive video"
+    suggest: "export video"
+    severity: 0.96
+    issue_type: "incorrect_term"
+    category: "export"
+
+  - source: "output video"
+    suggest: "export video"
+    severity: 0.86
+    issue_type: "unnatural_ui_term"
+    category: "export"
+
+  - source: "export successfully"
+    suggest: "export complete"
+    severity: 0.56
+    issue_type: "term_preference"
+    category: "export"
+
+  - source: "save successfully"
+    suggest: "saved"
+    severity: 0.58
+    issue_type: "term_preference"
+    category: "export"
+
+  - source: "download successfully"
+    suggest: "download complete"
+    severity: 0.60
+    issue_type: "term_preference"
+    category: "export"
+
+  - source: "my works"
+    suggest: "my projects"
+    severity: 0.86
+    issue_type: "unnatural_ui_term"
+    category: "project"
+
+  - source: "my creation"
+    suggest: "my projects"
+    severity: 0.82
+    issue_type: "unnatural_ui_term"
+    category: "project"
+
+  - source: "my videos"
+    suggest: "projects"
+    severity: 0.64
+    issue_type: "ambiguous_ui_term"
+    category: "project"
+
+  - source: "save to my project"
+    suggest: "saved to projects"
+    severity: 0.76
+    issue_type: "unnatural_ui_term"
+    category: "project"
+
+  - source: "draft box"
+    suggest: "drafts"
+    severity: 0.92
+    issue_type: "literal_translation"
+    category: "project"
+
+  - source: "drafts box"
+    suggest: "drafts"
+    severity: 0.92
+    issue_type: "literal_translation"
+    category: "project"
+
+  - source: "manual clipping"
+    suggest: "manual editing"
+    severity: 0.94
+    issue_type: "incorrect_term"
+    category: "editing"
+
+  - source: "manual cut"
+    suggest: "trim manually"
+    severity: 0.72
+    issue_type: "ambiguous_ui_term"
+    category: "editing"
+
+  - source: "intelligent clipping"
+    suggest: "auto edit"
+    severity: 0.86
+    issue_type: "literal_translation"
+    category: "editing"
+
+  - source: "smart clipping"
+    suggest: "auto edit"
+    severity: 0.82
+    issue_type: "literal_translation"
+    category: "editing"
+
+  - source: "video clipping"
+    suggest: "video editing"
+    severity: 0.88
+    issue_type: "unnatural_ui_term"
+    category: "editing"
+
+  - source: "clip video"
+    suggest: "edit video"
+    severity: 0.58
+    issue_type: "term_preference"
+    category: "editing"
+
+  - source: "split in points"
+    suggest: "split at markers"
+    severity: 0.80
+    issue_type: "unnatural_ui_term"
+    category: "editing"
+
+  - source: "start shot"
+    suggest: "start recording"
+    severity: 0.90
+    issue_type: "incorrect_term"
+    category: "recording"
+
+  - source: "end shot"
+    suggest: "stop recording"
+    severity: 0.90
+    issue_type: "incorrect_term"
+    category: "recording"
+
+  - source: "shooting"
+    suggest: "recording"
+    severity: 0.70
+    issue_type: "term_preference"
+    category: "recording"
+
+  - source: "shot in progress"
+    suggest: "recording..."
+    severity: 0.82
+    issue_type: "unnatural_ui_term"
+    category: "recording"
+
+  - source: "recording finished"
+    suggest: "recording complete"
+    severity: 0.56
+    issue_type: "term_preference"
+    category: "recording"
+
+  - source: "pause shot"
+    suggest: "pause recording"
+    severity: 0.90
+    issue_type: "incorrect_term"
+    category: "recording"
+
+  - source: "free for limited time"
+    suggest: "limited-time free"
+    severity: 0.52
+    issue_type: "term_preference"
+    category: "monetization"
+
+  - source: "time-limited free"
+    suggest: "limited-time free"
+    severity: 0.68
+    issue_type: "term_preference"
+    category: "monetization"
+
+  - source: "free limit"
+    suggest: "limited-time free"
+    severity: 0.90
+    issue_type: "incorrect_term"
+    category: "monetization"
+
+  - source: "pay"
+    suggest: "paid"
+    severity: 0.74
+    issue_type: "term_preference"
+    category: "monetization"
+
+  - source: "vip"
+    suggest: "premium"
+    severity: 0.78
+    issue_type: "regional_preference"
+    category: "monetization"
+
+  - source: "whether to save"
+    suggest: "save changes?"
+    severity: 0.84
+    issue_type: "literal_translation"
+    category: "dialog"
+
+  - source: "exit editing"
+    suggest: "leave editor"
+    severity: 0.66
+    issue_type: "term_preference"
+    category: "dialog"
+
+  - source: "quit editing"
+    suggest: "leave editor"
+    severity: 0.64
+    issue_type: "term_preference"
+    category: "dialog"
+
+  - source: "continue edit"
+    suggest: "continue editing"
+    severity: 0.80
+    issue_type: "grammar"
+    category: "dialog"
+
+  - source: "give up editing"
+    suggest: "discard changes"
+    severity: 0.94
+    issue_type: "misleading_ui_term"
+    category: "dialog"
+
+  - source: "cancel save"
+    suggest: "don't save"
+    severity: 0.84
+    issue_type: "misleading_ui_term"
+    category: "dialog"
+
+  - source: "sure to delete?"
+    suggest: "delete this?"
+    severity: 0.86
+    issue_type: "grammar"
+    category: "dialog"
+
+  - source: "delete successfully"
+    suggest: "deleted"
+    severity: 0.58
+    issue_type: "term_preference"
+    category: "dialog"
+
+  - source: "operation successful"
+    suggest: "done"
+    severity: 0.62
+    issue_type: "unnatural_ui_term"
+    category: "dialog"
+
+  - source: "operation failed"
+    suggest: "something went wrong"
+    severity: 0.76
+    issue_type: "unnatural_ui_term"
+    category: "dialog"
+
+  - source: "please try again later"
+    suggest: "please try again"
+    severity: 0.48
+    issue_type: "term_preference"
+    category: "dialog"
+
+  - source: "download failed"
+    suggest: "download failed"
+    severity: 0.10
+    issue_type: "valid_term"
+    category: "transfer"
+
+  - source: "highlight generation failed"
+    suggest: "failed to create highlights"
+    severity: 0.60
+    issue_type: "term_preference"
+    category: "transfer"
+
+  - source: "generation failed"
+    suggest: "failed to create"
+    severity: 0.56
+    issue_type: "term_preference"
+    category: "transfer"
+
+  - source: "video has been saved"
+    suggest: "video saved"
+    severity: 0.54
+    issue_type: "term_preference"
+    category: "transfer"
+
+  - source: "saved to my project"
+    suggest: "saved to projects"
+    severity: 0.74
+    issue_type: "unnatural_ui_term"
+    category: "transfer"
+
+  - source: "open album permission"
+    suggest: "allow photo access"
+    severity: 0.94
+    issue_type: "chinglish"
+    category: "permission"
+
+  - source: "open camera permission"
+    suggest: "allow camera access"
+    severity: 0.94
+    issue_type: "chinglish"
+    category: "permission"
+
+  - source: "open microphone permission"
+    suggest: "allow microphone access"
+    severity: 0.94
+    issue_type: "chinglish"
+    category: "permission"
+
+  - source: "authorize album"
+    suggest: "allow photo access"
+    severity: 0.82
+    issue_type: "unnatural_ui_term"
+    category: "permission"
+
+  - source: "no permission"
+    suggest: "access denied"
+    severity: 0.68
+    issue_type: "term_preference"
+    category: "permission"
+
+  - source: "confirm"
+    suggest: "done"
+    severity: 0.44
+    issue_type: "context_sensitive"
+    category: "generic"
+
+  - source: "cancel"
+    suggest: "cancel"
+    severity: 0.10
+    issue_type: "valid_term"
+    category: "generic"
+
+  - source: "more function"
+    suggest: "more tools"
+    severity: 0.82
+    issue_type: "literal_translation"
+    category: "generic"
+
+  - source: "function"
+    suggest: "feature"
+    severity: 0.58
+    issue_type: "term_preference"
+    category: "generic"
+
+  - source: "use immediately"
+    suggest: "use now"
+    severity: 0.74
+    issue_type: "unnatural_ui_term"
+    category: "generic"
+
+  - source: "go use"
+    suggest: "try it"
+    severity: 0.94
+    issue_type: "incorrect_term"
+    category: "generic"
+
+preferred_terms:
+  比例: "Aspect ratio"
+  原声: "Original audio"
+  音效: "Sound effects"
+  背景音乐: "Background music"
+  模板: "Template"
+  一键成片: "Auto edit"
+  高光集锦: "Highlight reel"
+  高光: "Highlights"
+  草稿: "Drafts"
+  我的项目: "Projects"
+  导出: "Export"
+  保存到本地: "Save to device"
+  保存到相册: "Save to photos"
+  录制中: "Recording..."
+  开始录制: "Start recording"
+  停止录制: "Stop recording"
+  继续编辑: "Continue editing"
+  放弃编辑: "Discard changes"
+  权限: "Access"
+  相册权限: "Photo access"
+  麦克风权限: "Microphone access"
+  相机权限: "Camera access"
+  付费: "Paid"
+  限免: "Limited-time free"
+  会员: "Premium"
+
+high_risk_keywords:
+  - "delete"
+  - "discard"
+  - "subscribe"
+  - "payment"
+  - "purchase"
+  - "save"
+  - "export"
+  - "download"
+  - "failed"
+  - "permission"
+  - "access"
+  - "retry"
+  - "remove"
+  - "leave"
+  - "cancel"
+
+cta_preferred_terms:
+  - "try it"
+  - "use template"
+  - "export"
+  - "save"
+  - "continue"
+  - "done"
+  - "retry"
+  - "allow access"
+  - "start recording"
+  - "stop recording"
+
+banned_patterns:
+  - pattern: "^open (.+?) permission$"
+    suggest: "allow {g1} access"
+    severity: 0.94
+    issue_type: "chinglish"
+    category: "permission"
+
+  - pattern: "^open (.+?) sound$"
+    suggest: "unmute {g1} audio"
+    severity: 0.90
+    issue_type: "chinglish"
+    category: "audio"
+
+  - pattern: "^close (.+?) sound$"
+    suggest: "mute {g1} audio"
+    severity: 0.90
+    issue_type: "chinglish"
+    category: "audio"
+
+  - pattern: "^one click (.+)$"
+    suggest: "auto edit"
+    severity: 0.82
+    issue_type: "literal_translation"
+    category: "template"
+
+  - pattern: "^my works$"
+    suggest: "my projects"
+    severity: 0.86
+    issue_type: "unnatural_ui_term"
+    category: "project"
+
+  - pattern: "^draft box$"
+    suggest: "drafts"
+    severity: 0.92
+    issue_type: "literal_translation"
+    category: "project"
+
+  - pattern: "^manual clipping$"
+    suggest: "manual editing"
+    severity: 0.94
+    issue_type: "incorrect_term"
+    category: "editing"
+
+  - pattern: "^highlight collection$"
+    suggest: "highlight reel"
+    severity: 0.90
+    issue_type: "unnatural_ui_term"
+    category: "highlight"
