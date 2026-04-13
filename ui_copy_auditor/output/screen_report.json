@@ -1,0 +1,69 @@
+[
+  {
+    "image": "000001.png",
+    "image_path": "C:\\Users\\Xbot\\ui_copy_auditor\\screen_shot\\000001.png",
+    "screen_name": "",
+    "screen_purpose": "",
+    "user_journey_from": "",
+    "user_journey_to": "",
+    "user_task": "",
+    "product_context_summary": "",
+    "screen_verdict": "issues_found",
+    "no_issue_summary": "",
+    "issues": [
+      {
+        "position": "label",
+        "current_text": "AlI",
+        "problem": "Possible spelling mistake found.",
+        "suggestion": "Ali",
+        "severity": "important",
+        "issue_type": "misspelling",
+        "confidence": 0.72,
+        "code_locations": []
+      },
+      {
+        "position": "label",
+        "current_text": "SoccerTransition",
+        "problem": "Possible spelling mistake found.",
+        "suggestion": "Soccer Transition",
+        "severity": "important",
+        "issue_type": "misspelling",
+        "confidence": 0.72,
+        "code_locations": []
+      },
+      {
+        "position": "label",
+        "current_text": "Slow-Mo Goal",
+        "problem": "Did you mean the noun or adjective “slo-mo” (= “slow motion”)?",
+        "suggestion": "Slo-mo",
+        "severity": "important",
+        "issue_type": "grammar",
+        "confidence": 0.72,
+        "code_locations": []
+      }
+    ],
+    "visible_texts": [
+      "14:37",
+      "Studio",
+      "New Project",
+      "Edit Markers",
+      "Auto Edit",
+      "Videos with Markers",
+      "Fast Video Merge",
+      "Template",
+      "Drafts",
+      "AlI",
+      "Slow tempo",
+      "Fast tempo",
+      "Beat Drop Solo",
+      "Goal Reel",
+      "SoccerTransition",
+      "Slow-Mo Goal",
+      "Home",
+      "Gallery",
+      "Create",
+      "Account"
+    ],
+    "llm_error": ""
+  }
+]
