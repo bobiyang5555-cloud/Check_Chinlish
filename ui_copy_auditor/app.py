@@ -6,22 +6,16 @@ import pandas as pd
 import streamlit as st
 from PIL import Image, ImageDraw
 
-st.set_page_config(page_title="UI Copy Auditor", layout="wide")
+st.set_page_config(page_title="UI Copy Reviewer (Skill)", layout="wide")
 
 
-def load_data(report_json: Path, report_csv: Path) -> pd.DataFrame:
-    if report_json.exists():
-        data = json.loads(report_json.read_text(encoding="utf-8"))
-        return pd.DataFrame(data)
-    if report_csv.exists():
-        return pd.read_csv(report_csv)
-    return pd.DataFrame()
-
-
-def safe_list(v: Any) -> List[Any]:
-    if isinstance(v, list):
-        return v
-    return []
+def load_json(path: Path, default):
+    if path.exists():
+        try:
+            return json.loads(path.read_text(encoding="utf-8"))
+        except Exception:
+            return default
+    return default
 
 
 def parse_bbox(v: Any):
@@ -37,204 +31,139 @@ def parse_bbox(v: Any):
     return []
 
 
-def get_first_rule_field(rule_hits: Any, field: str) -> str:
-    hits = safe_list(rule_hits)
-    if hits and isinstance(hits[0], dict):
-        return str(hits[0].get(field, "") or "")
-    return ""
-
-
 def draw_bbox(img: Image.Image, bbox):
     if isinstance(bbox, list) and len(bbox) == 4:
-        img = img.copy()
         draw = ImageDraw.Draw(img)
         draw.rectangle(bbox, outline="red", width=4)
-        return img
     return img
 
 
-def normalize_dataframe(df: pd.DataFrame) -> pd.DataFrame:
+def normalize_df(df: pd.DataFrame) -> pd.DataFrame:
     if df.empty:
         return df
-
-    if "top_rule_category" not in df.columns:
-        df["top_rule_category"] = df.get("rule_hits", pd.Series([[]] * len(df))).apply(
-            lambda x: get_first_rule_field(x, "category")
-        )
-
-    if "top_rule_match_mode" not in df.columns:
-        df["top_rule_match_mode"] = df.get("rule_hits", pd.Series([[]] * len(df))).apply(
-            lambda x: get_first_rule_field(x, "match_mode")
-        )
-
     if "bbox" in df.columns:
         df["bbox"] = df["bbox"].apply(parse_bbox)
-
     if "priority" not in df.columns:
         df["priority"] = "P3"
     if "score" not in df.columns:
         df["score"] = 0
-    if "suggestion" not in df.columns:
-        df["suggestion"] = ""
-    if "text" not in df.columns:
-        df["text"] = ""
-    if "image" not in df.columns:
-        df["image"] = ""
-    if "image_path" not in df.columns:
-        df["image_path"] = ""
-    if "llm_verdict" not in df.columns:
-        df["llm_verdict"] = ""
-    if "llm_reason" not in df.columns:
-        df["llm_reason"] = ""
-    if "repeated_count" not in df.columns:
-        df["repeated_count"] = 1
-    if "grammar_issue_count" not in df.columns:
-        df["grammar_issue_count"] = 0
-
-    priority_order = {"P0": 0, "P1": 1, "P2": 2, "P3": 3}
-    df["priority_order"] = df["priority"].map(priority_order).fillna(99)
+    if "skill_severity" not in df.columns:
+        df["skill_severity"] = "minor"
+    if "skill_issue_type" not in df.columns:
+        df["skill_issue_type"] = "other"
+    order = {"P0": 0, "P1": 1, "P2": 2, "P3": 3}
+    df["priority_order"] = df["priority"].map(order).fillna(99)
     return df
 
 
 def main():
-    st.title("UI Copy Auditor")
-    st.caption("本地截图英文质检器")
-
-    default_report_json = Path("output/report.json")
-    default_report_csv = Path("output/report.csv")
+    st.title("UI Copy Reviewer (Skill-aligned)")
+    st.caption("按 screen 上下文输出的 UI 文案审校结果")
 
     with st.sidebar:
-        st.header("数据源")
-        report_json_input = st.text_input("report.json 路径", value=str(default_report_json))
-        report_csv_input = st.text_input("report.csv 路径", value=str(default_report_csv))
-        st.markdown("先运行主程序生成报告，再打开这个页面。")
+        out_dir = st.text_input("输出目录", value="output")
+    out_path = Path(out_dir)
+    report_json = out_path / "report.json"
+    screen_json = out_path / "screen_report.json"
+    md_path = out_path / "review_report.md"
 
-    report_json = Path(report_json_input)
-    report_csv = Path(report_csv_input)
-    df = normalize_dataframe(load_data(report_json, report_csv))
+    rows = load_json(report_json, [])
+    screens = load_json(screen_json, [])
+    df = normalize_df(pd.DataFrame(rows))
 
-    if df.empty:
-        st.warning("没有找到 report.json 或 report.csv。先运行主程序生成输出。")
-        st.code("python ui_copy_auditor.py --input screenshots --rules term_rules.yaml --output output")
+    if df.empty and not screens:
+        st.warning("没找到 skill 审校结果。先运行 ui_copy_auditor.py。")
+        st.code("python ui_copy_auditor.py --input screenshots --output output --disable-ollama")
         st.stop()
 
     with st.sidebar:
-        st.header("筛选")
-        priority_filter = st.multiselect(
-            "优先级",
-            options=["P0", "P1", "P2", "P3"],
-            default=["P0", "P1", "P2", "P3"],
-        )
+        pri = st.multiselect("优先级", ["P0", "P1", "P2", "P3"], default=["P0", "P1", "P2", "P3"])
+        sev_opts = sorted([x for x in df.get("skill_severity", pd.Series(dtype=str)).dropna().astype(str).unique().tolist() if x]) if not df.empty else []
+        sev = st.multiselect("严重程度", sev_opts, default=sev_opts)
+        issue_opts = sorted([x for x in df.get("skill_issue_type", pd.Series(dtype=str)).dropna().astype(str).unique().tolist() if x]) if not df.empty else []
+        issue_types = st.multiselect("问题类型", issue_opts, default=issue_opts)
+        keyword = st.text_input("关键词")
+        only_suggestion = st.checkbox("只看有建议改法", value=False)
 
-        category_options = sorted([x for x in df["top_rule_category"].fillna("").unique().tolist() if x])
-        category_filter = st.multiselect(
-            "分类",
-            options=category_options,
-            default=category_options,
-        )
+    if not df.empty:
+        filtered = df[df["priority"].isin(pri)].copy()
+        if sev_opts:
+            filtered = filtered[filtered["skill_severity"].isin(sev)]
+        if issue_opts:
+            filtered = filtered[filtered["skill_issue_type"].isin(issue_types)]
+        if keyword:
+            filtered = filtered[
+                filtered["text"].astype(str).str.contains(keyword, case=False, na=False)
+                | filtered["suggestion"].astype(str).str.contains(keyword, case=False, na=False)
+                | filtered["image"].astype(str).str.contains(keyword, case=False, na=False)
+            ]
+        if only_suggestion:
+            filtered = filtered[filtered["suggestion"].fillna("") != ""]
+        filtered = filtered.sort_values(["priority_order", "score"], ascending=[True, False])
+    else:
+        filtered = pd.DataFrame()
 
-        match_mode_options = sorted([x for x in df["top_rule_match_mode"].fillna("").unique().tolist() if x])
-        match_mode_filter = st.multiselect(
-            "命中方式",
-            options=match_mode_options,
-            default=match_mode_options,
-        )
+    if screens:
+        ctx = screens[0].get("product_context_summary", "")
+        if ctx:
+            st.subheader("产品上下文")
+            st.info(ctx)
 
-        verdict_options = sorted([x for x in df["llm_verdict"].fillna("").unique().tolist() if x])
-        verdict_filter = st.multiselect(
-            "LLM判断",
-            options=verdict_options,
-            default=verdict_options,
-        )
+    c1, c2, c3 = st.columns(3)
+    c1.metric("Screens", len(screens))
+    c2.metric("Issues", len(df))
+    c3.metric("Filtered", len(filtered))
 
-        keyword = st.text_input("关键词搜索")
-        only_with_suggestion = st.checkbox("只看有替代建议", value=False)
-        only_high_confidence = st.checkbox("只看高分项（score >= 60）", value=False)
+    if md_path.exists():
+        st.download_button("下载 Markdown 审校报告", data=md_path.read_bytes(), file_name=md_path.name, mime="text/markdown")
 
-    filtered = df[df["priority"].isin(priority_filter)].copy()
+    if not filtered.empty:
+        st.subheader("问题总览")
+        st.dataframe(filtered[[c for c in ["priority", "skill_severity", "skill_issue_type", "text", "suggestion", "image"] if c in filtered.columns]], use_container_width=True, hide_index=True)
 
-    if category_options:
-        filtered = filtered[filtered["top_rule_category"].fillna("").isin(category_filter)]
-    if match_mode_options:
-        filtered = filtered[filtered["top_rule_match_mode"].fillna("").isin(match_mode_filter)]
-    if verdict_options:
-        filtered = filtered[filtered["llm_verdict"].fillna("").isin(verdict_filter)]
-    if keyword:
-        filtered = filtered[
-            filtered["text"].astype(str).str.contains(keyword, case=False, na=False)
-            | filtered["suggestion"].astype(str).str.contains(keyword, case=False, na=False)
-            | filtered["image"].astype(str).str.contains(keyword, case=False, na=False)
-        ]
-    if only_with_suggestion:
-        filtered = filtered[filtered["suggestion"].fillna("") != ""]
-    if only_high_confidence:
-        filtered = filtered[pd.to_numeric(filtered["score"], errors="coerce").fillna(0) >= 60]
+    st.subheader("按界面查看")
+    for screen in screens:
+        with st.expander(f"{screen.get('screen_name', screen.get('image', 'screen'))} · {screen.get('screen_purpose', '')}", expanded=False):
+            st.markdown(f"**用户旅程**：{screen.get('user_journey_from', '')} → **当前界面** → {screen.get('user_journey_to', '')}")
+            st.markdown(f"**用户任务**：{screen.get('user_task', '')}")
+            if screen.get("screen_verdict") == "no_issue":
+                st.success(screen.get("no_issue_summary", "此界面文案无问题"))
+            img_path = Path(screen.get("image_path", ""))
+            if img_path.exists():
+                st.image(Image.open(img_path).convert("RGB"), caption=screen.get("image", ""), use_container_width=True)
 
-    filtered = filtered.sort_values(["priority_order", "score"], ascending=[True, False])
+            issues = screen.get("issues", []) or []
+            if issues:
+                issue_df = pd.DataFrame(issues)
+                if not issue_df.empty:
+                    st.dataframe(issue_df[[c for c in ["position", "current_text", "problem", "suggestion", "severity", "issue_type"] if c in issue_df.columns]], use_container_width=True, hide_index=True)
+                for issue in issues:
+                    cur = issue.get("current_text", "")
+                    st.markdown(f"- **{cur}** → `{issue.get('suggestion', '')}` · {issue.get('problem', '')}")
+                    if issue.get("code_locations"):
+                        for loc in issue["code_locations"][:3]:
+                            st.caption(f"{loc['file']}:{loc['line']} · {loc['snippet']}")
 
-    c1, c2, c3, c4 = st.columns(4)
-    c1.metric("总条数", len(df))
-    c2.metric("筛选后", len(filtered))
-    c3.metric("P0", int((df["priority"] == "P0").sum()))
-    c4.metric("P1", int((df["priority"] == "P1").sum()))
-
-    st.subheader("结果总览")
-    show_cols = [
-        col for col in [
-            "priority", "score", "top_rule_category", "top_rule_match_mode",
-            "llm_verdict", "text", "suggestion", "image"
-        ] if col in filtered.columns
-    ]
-    st.dataframe(filtered[show_cols], use_container_width=True, hide_index=True)
-
-    if report_csv.exists():
-        st.download_button(
-            "下载 CSV",
-            data=report_csv.read_bytes(),
-            file_name=report_csv.name,
-            mime="text/csv",
-        )
-    if report_json.exists():
-        st.download_button(
-            "下载 JSON",
-            data=report_json.read_bytes(),
-            file_name=report_json.name,
-            mime="application/json",
-        )
-
-    st.subheader("逐条查看")
-    for _, row in filtered.iterrows():
-        with st.container():
-            col1, col2 = st.columns([1, 1.25])
-
-            with col1:
-                img_path = Path(str(row.get("image_path", "")))
-                if img_path.exists():
-                    img = Image.open(img_path).convert("RGB")
-                    img = draw_bbox(img, row.get("bbox", []))
-                    st.image(img, caption=str(row.get("image", "")), use_container_width=True)
-                else:
-                    st.info(f"找不到图片: {img_path}")
-
-            with col2:
-                st.markdown(f"### {row.get('text', '')}")
-                st.write(
-                    f"**优先级：** {row.get('priority', '-') }  |  "
-                    f"**分数：** {row.get('score', '-') }  |  "
-                    f"**分类：** {row.get('top_rule_category', '-') or '-'}  |  "
-                    f"**命中方式：** {row.get('top_rule_match_mode', '-') or '-'}"
-                )
-                st.write(f"**建议改法：** {row.get('suggestion', '') or '-'}")
-                st.write(f"**LLM判断：** {row.get('llm_verdict', '') or '-'}")
-                st.write(f"**原因：** {row.get('llm_reason', '') or '-'}")
-                st.write(f"**重复出现次数：** {row.get('repeated_count', 1)}")
-                st.write(f"**Grammar问题数：** {row.get('grammar_issue_count', 0)}")
-                rule_hits = row.get("rule_hits", [])
-                if isinstance(rule_hits, list) and rule_hits:
-                    st.write("**规则命中：**")
-                    st.json(rule_hits)
-
-            st.divider()
+    if not filtered.empty:
+        st.subheader("逐条问题")
+        for _, row in filtered.iterrows():
+            with st.container():
+                left, right = st.columns([1, 1.3])
+                with left:
+                    img_path = Path(str(row.get("image_path", "")))
+                    if img_path.exists():
+                        img = Image.open(img_path).convert("RGB")
+                        img = draw_bbox(img, row.get("bbox", []))
+                        st.image(img, caption=row.get("image", ""), use_container_width=True)
+                with right:
+                    st.markdown(f"### {row.get('text', '')}")
+                    st.write(f"**建议修改：** {row.get('suggestion', '') or '-'}")
+                    st.write(f"**问题：** {row.get('problem', '') or '-'}")
+                    st.write(f"**优先级：** {row.get('priority', '-') } | **严重程度：** {row.get('skill_severity', '-') } | **问题类型：** {row.get('skill_issue_type', '-') }")
+                    if isinstance(row.get('code_locations', None), list) and row.get('code_locations'):
+                        st.write("**代码定位：**")
+                        st.json(row.get('code_locations'))
+                st.divider()
 
 
 if __name__ == "__main__":

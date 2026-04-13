@@ -29,7 +29,10 @@ from typing import Any, Dict, Iterable, List, Optional, Tuple
 
 import pandas as pd
 import requests
-import yaml
+try:
+    import yaml
+except Exception:
+    yaml = None
 
 try:
     from Levenshtein import ratio as levenshtein_ratio
@@ -42,7 +45,7 @@ except Exception:
     PaddleOCR = None
 
 
-IMAGE_EXTS = {".PNG",".png", ".jpg", ".jpeg", ".webp", ".bmp"}
+IMAGE_EXTS = {".png", ".jpg", ".jpeg", ".webp", ".bmp"}
 DEFAULT_LT_URL = "http://localhost:8081/v2/check"
 DEFAULT_OLLAMA_URL = "http://localhost:11434/api/generate"
 DEFAULT_OLLAMA_MODEL = "llama3.1:8b"
@@ -83,9 +86,16 @@ def list_images(folder: str) -> List[Path]:
     return [p for p in Path(folder).rglob("*") if p.suffix.lower() in IMAGE_EXTS]
 
 
-def load_rules(rule_path: str) -> Dict[str, Any]:
-    with open(rule_path, "r", encoding="utf-8") as f:
-        data = yaml.safe_load(f) or {}
+def load_rules(rule_path: Optional[str] = None) -> Dict[str, Any]:
+    data: Dict[str, Any] = {}
+    if rule_path and yaml is not None:
+        try:
+            with open(rule_path, "r", encoding="utf-8") as f:
+                data = yaml.safe_load(f) or {}
+        except FileNotFoundError:
+            data = {}
+        except Exception:
+            data = {}
     data.setdefault("forbidden", [])
     data.setdefault("preferred_terms", {})
     data.setdefault("high_risk_keywords", [])
@@ -612,8 +622,8 @@ def compute_priority(
 
 def audit_folder(
     folder: str,
-    rule_path: str,
-    output_dir: str,
+    output_dir: str = "output",
+    rule_path: Optional[str] = None,
     use_languagetool: bool = True,
     use_ollama: bool = True,
     lt_url: str = DEFAULT_LT_URL,
@@ -718,7 +728,7 @@ def audit_folder(
 def build_argparser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(description="Audit screenshot UI copy for Chinglish / unnatural overseas wording.")
     p.add_argument("--input", required=True, help="Folder containing screenshots")
-    p.add_argument("--rules", default="term_rules.yaml", help="YAML rules file")
+    p.add_argument("--rules", default=None, help="Optional YAML rules file")
     p.add_argument("--output", default="output", help="Output folder")
     p.add_argument("--disable-languagetool", action="store_true", help="Disable local LanguageTool check")
     p.add_argument("--disable-ollama", action="store_true", help="Disable local Ollama check")
